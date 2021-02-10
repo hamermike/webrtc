@@ -9,26 +9,26 @@ jobs:
     runs-on: macos-latest
     steps:
       - run: |
-          # git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          # export PATH=$PATH:${PWD}/depot_tools
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          export PATH=$PATH:${PWD}/depot_tools
           
-          # fetch --nohooks webrtc_ios
+          fetch --nohooks webrtc_ios
           
-          # cd src
+          cd src
           
-          # git checkout ${{ github.event.inputs.hash }}
+          git checkout ${{ github.event.inputs.hash }}
           
-          # gclient sync
+          gclient sync
 
-          # gn gen ../out/mac_x64 --args='target_os="mac" target_cpu="x64" is_component_build=false is_debug=false rtc_libvpx_build_vp9=false enable_stripping=true rtc_enable_protobuf=false'
+          gn gen ../out/mac_x64 --args='target_os="mac" target_cpu="x64" is_component_build=false is_debug=false rtc_libvpx_build_vp9=false enable_stripping=true rtc_enable_protobuf=false'
 
-          # ninja -C ../out/mac_x64 sdk:mac_framework_objc
+          ninja -C ../out/mac_x64 sdk:mac_framework_objc
 
-          # xcodebuild -create-xcframework \
-          #   -framework ../out/mac_x64/WebRTC.framework \
-          #   -output ../out/WebRTC.xcframework
+          xcodebuild -create-xcframework \
+            -framework ../out/mac_x64/WebRTC.framework \
+            -output ../out/WebRTC.xcframework
 
-          # cd ../out
+          cd ../out
 
           git init
           git remote add origin "https://x-access-token:$GITHUB_TOKEN@github.com/hamermike/webrtc.git"
