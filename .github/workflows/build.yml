@@ -30,9 +30,13 @@ jobs:
 
           cd ../out
 
+          echo "Initializing repo..."
+
           git init
-          git remote add origin "https://x-access-token:$GITHUB_TOKEN@github.com/hamermike/webrtc.git"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/hamermike/webrtc.git"
           git pull origin main
+
+          echo "Checking out branch..."
 
           git checkout -b release/${{ github.event.inputs.hash }}
           git add WebRTC.xcframework
