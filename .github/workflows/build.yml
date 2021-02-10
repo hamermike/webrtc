@@ -31,7 +31,7 @@ jobs:
           cd ../out
 
           git init
-          git remote add origin https://github.com/hamermike/webrtc.git
+          git remote add origin "https://x-access-token:$GITHUB_TOKEN@github.com/hamermike/webrtc.git"
           git pull origin main
 
           git checkout -b release/${{ github.event.inputs.hash }}
