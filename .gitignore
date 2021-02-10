@@ -1,0 +1,14 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+Package.resolved
+.swiftpm
+
+.gclient
+.gclient_entries
+/depot_tools
+/src
+/out
+/.cipd
