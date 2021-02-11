@@ -8,7 +8,15 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - run: |
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HASH: ${{ github.event.inputs.hash }}
+        run: |
+          echo "Building WebRTC using commit ${HASH}."
+
+          export OUTPUT_DIR=${TMPDIR}/${HASH}
+          echo "Saving temporary output to ${OUTPUT_DIR} directory."
+
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           export PATH=$PATH:${PWD}/depot_tools
           
@@ -16,24 +24,24 @@ jobs:
           
           cd src
           
-          git checkout ${{ github.event.inputs.hash }}
+          git checkout ${HASH}
           
           gclient sync
 
-          gn gen ../out/mac_x64 --args='target_os="mac" target_cpu="x64" is_component_build=false is_debug=false rtc_libvpx_build_vp9=false enable_stripping=true rtc_enable_protobuf=false'
+          gn gen ${OUTPUT_DIR}/mac_x64 --args='target_os="mac" target_cpu="x64" is_component_build=false is_debug=false rtc_libvpx_build_vp9=false enable_stripping=true rtc_enable_protobuf=false'
 
-          ninja -C ../out/mac_x64 sdk:mac_framework_objc
+          ninja -C ${OUTPUT_DIR}/mac_x64 sdk:mac_framework_objc
 
           xcodebuild -create-xcframework \
-            -framework ../out/mac_x64/WebRTC.framework \
-            -output ../out/WebRTC.xcframework
+            -framework ${OUTPUT_DIR}/mac_x64/WebRTC.framework \
+            -output ${OUTPUT_DIR}/WebRTC.xcframework
 
-          cd ../out
+          cd ${OUTPUT_DIR}
 
           echo "Initializing repo..."
 
           git init
-          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/hamermike/webrtc.git"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/hamermike/webrtc.git"
           git pull origin main
 
           echo "Checking out branch..."
