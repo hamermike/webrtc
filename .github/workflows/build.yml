@@ -12,13 +12,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HASH: ${{ github.event.inputs.hash }}
         run: |
-          echo "Building WebRTC using commit ${HASH}."
-
-          export OUTPUT_DIR=${TMPDIR}/${HASH}
-          echo "Saving temporary output to ${OUTPUT_DIR} directory."
-
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          export PATH=$PATH:${PWD}/depot_tools
+          export PATH=${PATH}:${PWD}/depot_tools
           
           fetch --nohooks webrtc_ios
           
@@ -27,6 +22,8 @@ jobs:
           git checkout ${HASH}
           
           gclient sync
+
+          export OUTPUT_DIR=${TMPDIR}${HASH}
 
           gn gen ${OUTPUT_DIR}/mac_x64 --args='target_os="mac" target_cpu="x64" is_component_build=false is_debug=false rtc_libvpx_build_vp9=false enable_stripping=true rtc_enable_protobuf=false'
 
@@ -38,15 +35,11 @@ jobs:
 
           cd ${OUTPUT_DIR}
 
-          echo "Initializing repo..."
-
           git init
           git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/hamermike/webrtc.git"
           git pull origin main
 
-          echo "Checking out branch..."
-
-          git checkout -b release/${{ github.event.inputs.hash }}
+          git checkout -b release/${HASH}
           git add WebRTC.xcframework
-          git commit -m "WebRTC Release ${{ github.event.inputs.hash }}" -- WebRTC.xcframework
-          git push --set-upstream origin "release/${{ github.event.inputs.hash }}"
+          git commit -m "WebRTC release ${HASH}" -- WebRTC.xcframework
+          git push --set-upstream origin "release/${HASH}"
