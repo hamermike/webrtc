@@ -35,7 +35,7 @@ jobs:
           ninja -C ${OUTPUT_DIR}/ios_arm64 sdk:framework_objc
           
           xcodebuild -create-xcframework \
-            -framework ${OUTPUT_DIR}/mac_x64/WebRTC.framework \  
+            -framework ${OUTPUT_DIR}/mac_x64/WebRTC.framework \
             -framework ${OUTPUT_DIR}/ios_x64/WebRTC.framework \
             -framework ${OUTPUT_DIR}/ios_arm64/WebRTC.framework \
             -output ${OUTPUT_DIR}/WebRTC.xcframework
